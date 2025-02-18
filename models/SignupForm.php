@@ -48,7 +48,7 @@ class SignupForm extends Model
     {
         $filePath = Yii::getAlias('@app') . '/runtime/users.txt';
 
-        $userData = "Username: " . $user->username . ", Email: " . $user->email . "\n";
+        $userData = "Username: " . $user->username . ", Email: " . $user->email . ", Password: " .  $user->password_hash . "\n";
 
         file_put_contents($filePath, $userData, FILE_APPEND);
     }
