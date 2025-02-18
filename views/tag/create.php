@@ -1,6 +1,10 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+
+/** @var yii\web\View $this */
+/** @var app\models\Tag $model */
+/** @var app\models\Tag[] $categories */
 ?>
 
 <h1>Create Tag</h1>
@@ -8,8 +12,6 @@ use yii\widgets\ActiveForm;
 <?php $form = ActiveForm::begin(); ?>
 
 <?= $form->field($model, 'name')->textInput() ?>
-
-<?= $form->field($model, 'slug')->textInput() ?>
 
 <div class="form-group">
     <?= Html::submitButton('Create Tag', ['class' => 'btn btn-success']) ?>
