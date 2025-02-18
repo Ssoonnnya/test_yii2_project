@@ -9,12 +9,10 @@ $this->title = 'Tags';
 
 <h1><?= Html::encode($this->title) ?></h1>
 
-<!-- Button to create a new tag -->
 <p>
     <?= Html::a('Create Tag', ['create'], ['class' => 'btn btn-success']) ?>
 </p>
 
-<!-- Check if there are categories -->
 <?php if (!empty($tags)): ?>
     <table class="table table-bordered">
         <thead>
@@ -35,7 +33,7 @@ $this->title = 'Tags';
                     <?= Html::a('Delete', ['delete', 'id' => $tag->id], [
                         'class' => 'btn btn-danger btn-sm',
                         'data' => [
-                            'confirm' => 'Are you sure you want to delete this category?',
+                            'confirm' => 'Are you sure you want to delete this Tag?',
                             'method' => 'post',
                         ],
                     ]) ?>
