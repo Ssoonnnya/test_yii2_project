@@ -48,7 +48,9 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 'login' => 'site/login',
-                'category' => 'category/create',
+                'category' => 'category/index',
+                'tag' => 'tag/index',
+                'product' => 'product/index',
             ],
         ],
     ],
