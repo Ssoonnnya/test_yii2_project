@@ -37,7 +37,7 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'info'],
                 ],
             ],
         ],
@@ -48,6 +48,7 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 'login' => 'site/login',
+                'category' => 'category/create',
             ],
         ],
     ],
@@ -60,7 +61,7 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1', '172.19.0.1'],
     ];
 
     $config['bootstrap'][] = 'gii';
