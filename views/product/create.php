@@ -1,7 +1,7 @@
 <?php
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Html;
+use app\models\Tag;
 
 /** @var yii\web\View $this */
 /** @var app\models\Product $model */
@@ -12,16 +12,21 @@ $this->title = 'Create Product';
 
 <h1><?= Html::encode($this->title) ?></h1>
 
+<div class="product-create">
+
 <?php $form = ActiveForm::begin(); ?>
 
-<?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'name')->textInput(['maxlength' => true])->label('Product Name') ?>
+<?= $form->field($model, 'price')->textInput(['type' => 'number', 'step' => '0.01'])->label('Price') ?>
+<?= $form->field($model, 'quantity')->textInput(['type' => 'number'])->label('Quantity') ?>
 
-<?= $form->field($model, 'price')->textInput(['type' => 'number', 'maxlength' => true]) ?>
-
-<?= $form->field($model, 'quantity')->textInput(['type' => 'number', 'min' => 0]) ?>
+<?= $form->field($model, 'tag_id')->checkboxList(
+    Tag::find()->select(['name', 'id'])->indexBy('id')->column()
+)->label('Tags') ?>
 
 <div class="form-group">
-    <?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
 </div>
 
 <?php ActiveForm::end(); ?>
+</div>
