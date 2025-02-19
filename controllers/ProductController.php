@@ -4,9 +4,27 @@ namespace app\controllers;
 
 use app\models\Product;
 use Yii;
+use yii\filters\AccessControl;
 
 class ProductController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $products = Product::find()->all();

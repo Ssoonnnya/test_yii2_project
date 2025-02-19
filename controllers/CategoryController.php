@@ -4,9 +4,27 @@ namespace app\controllers;
 
 use app\models\Category;
 use Yii;
+use yii\filters\AccessControl;
 
 class CategoryController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $categories = Category::find()->all();

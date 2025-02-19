@@ -4,9 +4,27 @@ namespace app\controllers;
 
 use app\models\Tag;
 use Yii;
+use yii\filters\AccessControl;
 
 class TagController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $tags = Tag::find()->all();
