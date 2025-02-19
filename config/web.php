@@ -52,6 +52,7 @@ $config = [
                 'category' => 'category/index',
                 'tag' => 'tag/index',
                 'product' => 'product/index',
+                'profile' => 'site/profile',
             ],
         ],
     ],

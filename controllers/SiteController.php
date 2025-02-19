@@ -1,8 +1,8 @@
 <?php
-
 namespace app\controllers;
 
 use app\models\SignupForm;
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -13,6 +13,10 @@ use app\models\ContactForm;
 
 class SiteController extends Controller
 {
+    const LOGIN_ATTEMPTS_FILE = '@runtime/login_attempts.txt';
+    const MAX_ATTEMPTS = 3;
+    const BLOCK_TIME = 300;
+
     /**
      * {@inheritdoc}
      */
@@ -21,10 +25,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'profile'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -79,38 +83,79 @@ class SiteController extends Controller
         ]);
     }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['profile']);
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+        $attemptsData = $this->getLoginAttempts();
+        $remainingTime = self::BLOCK_TIME - (time() - $attemptsData['last_attempt_time']);
+
+        if ($attemptsData['attempts'] >= self::MAX_ATTEMPTS && $remainingTime > 0) {
+            Yii::$app->session->setFlash('error', "Try again in {$remainingTime} seconds.");
+            return $this->render('login', ['model' => $model]);
         }
 
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
+        if ($model->load(Yii::$app->request->post())) {
+            $user = User::findOne(['username' => $model->username]);
+
+            if ($user && Yii::$app->security->validatePassword($model->password, $user->password_hash)) {
+                Yii::$app->user->login($user, 3600);
+                $this->resetLoginAttempts();
+                return $this->redirect(['profile']);
+            } else {
+                $model->addError('password', 'Wrong credentials');
+                $this->incrementLoginAttempts();
+            }
+        }
+
+
+        return $this->render('login', ['model' => $model]);
+    }
+
+    private function resetLoginAttempts()
+    {
+        file_put_contents(Yii::getAlias(self::LOGIN_ATTEMPTS_FILE), json_encode([
+            'attempts' => 0,
+            'last_attempt_time' => 0
+        ]));
+    }
+
+    private function incrementLoginAttempts()
+    {
+        $attemptsData = $this->getLoginAttempts();
+        $attemptsData['attempts']++;
+        $attemptsData['last_attempt_time'] = time();
+        file_put_contents(Yii::getAlias(self::LOGIN_ATTEMPTS_FILE), json_encode($attemptsData));
+    }
+
+    private function getLoginAttempts()
+    {
+        if (file_exists(Yii::getAlias(self::LOGIN_ATTEMPTS_FILE))) {
+            $data = json_decode(file_get_contents(Yii::getAlias(self::LOGIN_ATTEMPTS_FILE)), true);
+            return $data ?: ['attempts' => 0, 'last_attempt_time' => 0];
+        }
+        return ['attempts' => 0, 'last_attempt_time' => 0];
+    }
+
+    public function actionProfile()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['login']);
+        }
+
+        return $this->render('profile', [
+            'username' => Yii::$app->user->identity->username,
         ]);
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
-        return $this->goHome();
+        return $this->redirect(['login']);
     }
 
     /**
